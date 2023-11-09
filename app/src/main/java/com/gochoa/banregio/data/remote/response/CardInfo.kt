@@ -10,4 +10,6 @@ data class CardInfo(
     @field: Json(name = "Numero_Tarjeta") val numeroTarjeta: String,
     @field: Json(name = "Titular_Tarjeta") val titularTarjeta: String,
     @field: Json(name = "pkTarjetaCreditoID") val tarjetaCreditoId: Int
-)
+){
+
+}
