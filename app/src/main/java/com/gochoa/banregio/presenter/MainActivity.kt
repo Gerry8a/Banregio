@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gochoa.banregio.data.remote.ApiResponseStatus
 import com.gochoa.banregio.data.remote.response.CardInfo
@@ -33,8 +35,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun buildListeners() {
-        binding.cvvButton.setOnClickListener {
-            binding.tvCvv.text = randomCvv()
+        binding.tvCvv.setOnClickListener {
+            viewModel.timerFlow(5000)
+            lifecycleScope.launch {
+                viewModel.timer.collect {
+                    binding.tvCvv.text = randomCvv()
+                }
+            }
         }
     }
 
@@ -45,6 +52,7 @@ class MainActivity : AppCompatActivity() {
                     is ApiResponseStatus.Error -> {
                         Toast.makeText(this@MainActivity, it.messageID, Toast.LENGTH_SHORT).show()
                     }
+
                     is ApiResponseStatus.Loading -> {}
                     is ApiResponseStatus.Success -> buildCard(it.data)
                 }
@@ -73,7 +81,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun buildCard(data: CardInfo) {
         binding.apply {
-            tvCvv.text = data.cvv.toString()
             tvExpiration.text = data.fechaExp
             tvOwner.text = data.titularTarjeta
             tvFirst.text = data.numeroTarjeta
