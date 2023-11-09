@@ -6,9 +6,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.gochoa.banregio.data.remote.ApiResponseStatus
 import com.gochoa.banregio.data.remote.response.CardInfo
+import com.gochoa.banregio.data.remote.response.MovementsResponseItem
 import com.gochoa.banregio.databinding.ActivityMainBinding
+import com.gochoa.banregio.presenter.adapter.MovementsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -17,6 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: CardViewModel by viewModels()
+    private lateinit var movementsAdapter: MovementsAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,14 +46,22 @@ class MainActivity : AppCompatActivity() {
             }
 
             viewModel.movements.observe(this@MainActivity) {
-                when (it){
+                when (it) {
                     is ApiResponseStatus.Error -> Log.i("ggg", it.messageID)
                     is ApiResponseStatus.Loading -> {}
                     is ApiResponseStatus.Success -> {
-                        Log.i("ggg", it.data.size.toString())
+                        fillList(it.data)
                     }
                 }
             }
+        }
+    }
+
+    private fun fillList(data: List<MovementsResponseItem>) {
+        movementsAdapter = MovementsAdapter(data)
+        binding.rvList.apply {
+            adapter = movementsAdapter
+            layoutManager = LinearLayoutManager(this@MainActivity)
         }
     }
 
