@@ -2,6 +2,7 @@ package com.gochoa.banregio.presenter
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -38,6 +39,16 @@ class MainActivity : AppCompatActivity() {
                     is ApiResponseStatus.Success -> buildCard(it.data)
                 }
 
+            }
+
+            viewModel.movements.observe(this@MainActivity) {
+                when (it){
+                    is ApiResponseStatus.Error -> Log.i("ggg", it.messageID)
+                    is ApiResponseStatus.Loading -> {}
+                    is ApiResponseStatus.Success -> {
+                        Log.i("ggg", it.data.size.toString())
+                    }
+                }
             }
         }
     }
