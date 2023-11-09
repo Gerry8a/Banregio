@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.gochoa.banregio.data.remote.ApiResponseStatus
 import com.gochoa.banregio.data.remote.response.CardInfo
 import com.gochoa.banregio.data.remote.response.MovementsResponseItem
+import com.gochoa.banregio.data.utils.RandomNumber.randomCvv
 import com.gochoa.banregio.databinding.ActivityMainBinding
 import com.gochoa.banregio.presenter.adapter.MovementsAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,17 +29,22 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initUI()
+        buildListeners()
+    }
+
+    private fun buildListeners() {
+        binding.cvvButton.setOnClickListener {
+            binding.tvCvv.text = randomCvv()
+        }
     }
 
     private fun initUI() {
         lifecycleScope.launch {
-            viewModel.getCardInfo()
             viewModel.card.observe(this@MainActivity) {
                 when (it) {
                     is ApiResponseStatus.Error -> {
                         Toast.makeText(this@MainActivity, it.messageID, Toast.LENGTH_SHORT).show()
                     }
-
                     is ApiResponseStatus.Loading -> {}
                     is ApiResponseStatus.Success -> buildCard(it.data)
                 }

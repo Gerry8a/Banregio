@@ -24,11 +24,14 @@ class CardViewModel @Inject constructor(
         MutableLiveData<ApiResponseStatus<List<MovementsResponseItem>>>(ApiResponseStatus.Loading())
     val movements: LiveData<ApiResponseStatus<List<MovementsResponseItem>>> get() = _movements
 
+
     init {
         getMovements()
+        getCardInfo()
     }
 
-    fun getCardInfo() = viewModelScope.launch {
+
+    private fun getCardInfo() = viewModelScope.launch {
         repository.getCardInfo().let {
             when (it) {
                 is ApiResponseStatus.Error -> {
@@ -41,7 +44,7 @@ class CardViewModel @Inject constructor(
         }
     }
 
-    fun getMovements() = viewModelScope.launch {
+    private fun getMovements() = viewModelScope.launch {
         repository.getMovements().let {
             when (it) {
                 is ApiResponseStatus.Error -> _movements.value =
